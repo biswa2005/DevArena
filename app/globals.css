@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/* Theme variables */
+:root {
+  --background: #f8fafc;
+  /* soft light gray */
+  --foreground: #0b1220;
+  --card: #ffffff;
+}
+
+/* When dark class is applied by next-themes */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --card: #0b0b0b;
+}
+
+/* Provide a distinct light-theme background (a subtle gradient) */
+html:not(.dark) body {
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 60%);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+/* Navbar background adjustments for light theme */
+html:not(.dark) nav {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(6px);
+}
+
+/* Loader styles */
+.loader-wrap {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader {
+  width: 64px;
+  height: 64px;
+  position: relative;
+}
+
+.loader .ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 6px solid transparent;
+  border-top-color: #3b82f6;
+  /* blue */
+  border-right-color: #60a5fa;
+  animation: spin 1.2s linear infinite;
+}
+
+.loader .ring.ring-2 {
+  transform: scale(0.72);
+  border-top-color: #f97316;
+  /* orange */
+  border-right-color: #fb923c;
+  animation-duration: 1.6s;
+}
+
+.loader .dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  border-radius: 9999px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.18);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Small utility for monospace timer */
+.mono-timer {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+}
