@@ -15,27 +15,61 @@ export async function GET() {
       ? res.data.future_contests
       : [];
 
+    // Convert ISO → Date format for UI
+    const formatForUser = (isoString: string | null) => {
+      if (!isoString) return null;
+
+      const date = new Date(isoString);
+
+      return date.toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+    };
+
     const parseContestDate = (seconds?: number, str?: string) => {
-      if (typeof seconds === "number") return new Date(seconds * 1000).toISOString();
+      if (typeof seconds === "number")
+        return new Date(seconds * 1000).toISOString();
       if (!str) return null;
+
       const cleaned = str.replace(/\s+/g, " ").trim();
       let d = new Date(cleaned);
       if (isNaN(d.valueOf())) d = new Date(cleaned + " UTC");
+
       return isNaN(d.valueOf()) ? null : d.toISOString();
     };
 
-    const mapContest = (c: any) => ({
-      externalId: c.contest_code,
-      title: c.contest_name,
-      platform: "codechef",
-      url: `https://www.codechef.com/${c.contest_code}`,
-      startDate: parseContestDate(c.startTimeSeconds, c.contest_start_date),
-      endDate: parseContestDate(c.endTimeSeconds, c.contest_end_date),
-      location: "Online",
-      status: "UPCOMING",
-      prizes: null,
-      rawJson: c,
-    });
+    const mapContest = (c: any) => {
+      const startISO = parseContestDate(
+        c.startTimeSeconds,
+        c.contest_start_date
+      );
+      const endISO = parseContestDate(c.endTimeSeconds, c.contest_end_date);
+
+      return {
+        externalId: c.contest_code,
+        title: c.contest_name,
+        platform: "codechef",
+        url: `https://www.codechef.com/${c.contest_code}`,
+
+        // ISO format stored in DB
+        startDate: startISO,
+        endDate: endISO,
+
+        // User-showable readable format
+        startDateFormatted: startISO ? formatForUser(startISO) : null,
+        endDateFormatted: endISO ? formatForUser(endISO) : null,
+
+        location: "Online",
+        status: "UPCOMING",
+        prizes: null,
+        rawJson: c,
+      };
+    };
 
     const codechef_contests = [
       ...present.map(mapContest),
