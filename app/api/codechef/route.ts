@@ -15,29 +15,34 @@ export async function GET() {
       ? res.data.future_contests
       : [];
 
-    // Convert ISO → Date format for UI
-    const formatForUser = (isoString: string | null) => {
+    // ⏰ Force convert ISO → IST consistently (works on local + vercel)
+    const formatIST = (isoString: string | null) => {
       if (!isoString) return null;
 
       const date = new Date(isoString);
 
-      return date.toLocaleString("en-IN", {
+      return new Intl.DateTimeFormat("en-IN", {
+        timeZone: "Asia/Kolkata",
         day: "2-digit",
         month: "short",
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
         hour12: true,
-      });
+      }).format(date);
     };
 
+    // Parse API times
     const parseContestDate = (seconds?: number, str?: string) => {
-      if (typeof seconds === "number")
+      if (typeof seconds === "number") {
         return new Date(seconds * 1000).toISOString();
+      }
+
       if (!str) return null;
 
       const cleaned = str.replace(/\s+/g, " ").trim();
       let d = new Date(cleaned);
+
       if (isNaN(d.valueOf())) d = new Date(cleaned + " UTC");
 
       return isNaN(d.valueOf()) ? null : d.toISOString();
@@ -56,13 +61,13 @@ export async function GET() {
         platform: "codechef",
         url: `https://www.codechef.com/${c.contest_code}`,
 
-        // ISO format stored in DB
+        // Raw stored ISO
         startDate: startISO,
         endDate: endISO,
 
-        // User-showable readable format
-        startDateFormatted: startISO ? formatForUser(startISO) : null,
-        endDateFormatted: endISO ? formatForUser(endISO) : null,
+        // 🟢 Correct user-friendly IST time
+        startDateFormatted: formatIST(startISO),
+        endDateFormatted: formatIST(endISO),
 
         location: "Online",
         status: "UPCOMING",
