@@ -15,13 +15,36 @@ export async function GET() {
       ? res.data.future_contests
       : [];
 
-    // ⏰ Force convert ISO → IST consistently (works on local + vercel)
-    const formatIST = (isoString: string | null) => {
-      if (!isoString) return null;
+    // ------------------------------
+    // ✅ Always parse dates as IST
+    // ------------------------------
+    const parseAsIST = (dateString: string | null) => {
+      if (!dateString) return null;
 
-      const date = new Date(isoString);
+      // Normalize string
+      const cleaned = dateString.replace(/\s+/g, " ").trim();
 
-      return new Intl.DateTimeFormat("en-IN", {
+      // Use Intl to force IST interpretation
+      const date = new Date(
+        new Date(
+          new Intl.DateTimeFormat("en-IN", {
+            timeZone: "Asia/Kolkata",
+          })
+            .formatToParts(new Date(cleaned))
+            .map((v) => v.value)
+            .join(" ")
+        )
+      );
+
+      return isNaN(date.getTime()) ? null : date.toISOString();
+    };
+
+    // ------------------------------
+    // Format ISO → IST readable
+    // ------------------------------
+    const formatIST = (iso: string | null) => {
+      if (!iso) return null;
+      return new Date(iso).toLocaleString("en-IN", {
         timeZone: "Asia/Kolkata",
         day: "2-digit",
         month: "short",
@@ -29,31 +52,20 @@ export async function GET() {
         hour: "2-digit",
         minute: "2-digit",
         hour12: true,
-      }).format(date);
+      });
     };
 
-    // Parse API times
-    const parseContestDate = (seconds?: number, str?: string) => {
-      if (typeof seconds === "number") {
-        return new Date(seconds * 1000).toISOString();
-      }
-
-      if (!str) return null;
-
-      const cleaned = str.replace(/\s+/g, " ").trim();
-      let d = new Date(cleaned);
-
-      if (isNaN(d.valueOf())) d = new Date(cleaned + " UTC");
-
-      return isNaN(d.valueOf()) ? null : d.toISOString();
-    };
-
+    // ------------------------------
+    // Map CodeChef contests
+    // ------------------------------
     const mapContest = (c: any) => {
-      const startISO = parseContestDate(
-        c.startTimeSeconds,
-        c.contest_start_date
-      );
-      const endISO = parseContestDate(c.endTimeSeconds, c.contest_end_date);
+      const start = c.startTimeSeconds
+        ? new Date(c.startTimeSeconds * 1000).toISOString()
+        : parseAsIST(c?.contest_start_date);
+
+      const end = c.endTimeSeconds
+        ? new Date(c.endTimeSeconds * 1000).toISOString()
+        : parseAsIST(c?.contest_end_date);
 
       return {
         externalId: c.contest_code,
@@ -61,13 +73,11 @@ export async function GET() {
         platform: "codechef",
         url: `https://www.codechef.com/${c.contest_code}`,
 
-        // Raw stored ISO
-        startDate: startISO,
-        endDate: endISO,
+        startDate: start,
+        endDate: end,
 
-        // 🟢 Correct user-friendly IST time
-        startDateFormatted: formatIST(startISO),
-        endDateFormatted: formatIST(endISO),
+        startDateFormatted: formatIST(start),
+        endDateFormatted: formatIST(end),
 
         location: "Online",
         status: "UPCOMING",
