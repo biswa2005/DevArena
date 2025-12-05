@@ -15,36 +15,13 @@ export async function GET() {
       ? res.data.future_contests
       : [];
 
-    // ------------------------------
-    // ✅ Always parse dates as IST
-    // ------------------------------
-    const parseAsIST = (dateString: string | null) => {
-      if (!dateString) return null;
-
-      // Normalize string
-      const cleaned = dateString.replace(/\s+/g, " ").trim();
-
-      // Use Intl to force IST interpretation
-      const date = new Date(
-        new Date(
-          new Intl.DateTimeFormat("en-IN", {
-            timeZone: "Asia/Kolkata",
-          })
-            .formatToParts(new Date(cleaned))
-            .map((v) => v.value)
-            .join(" ")
-        )
-      );
-
-      return isNaN(date.getTime()) ? null : date.toISOString();
-    };
-
-    // ------------------------------
-    // Format ISO → IST readable
-    // ------------------------------
-    const formatIST = (iso: string | null) => {
+    // ✔ FORMAT ISO TIMESTAMP TO IST (NO DOUBLE CONVERSION)
+    const formatIST = (iso: string | null | undefined) => {
       if (!iso) return null;
-      return new Date(iso).toLocaleString("en-IN", {
+
+      const date = new Date(iso); // already includes +05:30 in API
+
+      return new Intl.DateTimeFormat("en-IN", {
         timeZone: "Asia/Kolkata",
         day: "2-digit",
         month: "short",
@@ -52,20 +29,13 @@ export async function GET() {
         hour: "2-digit",
         minute: "2-digit",
         hour12: true,
-      });
+      }).format(date);
     };
 
-    // ------------------------------
-    // Map CodeChef contests
-    // ------------------------------
     const mapContest = (c: any) => {
-      const start = c.startTimeSeconds
-        ? new Date(c.startTimeSeconds * 1000).toISOString()
-        : parseAsIST(c?.contest_start_date);
-
-      const end = c.endTimeSeconds
-        ? new Date(c.endTimeSeconds * 1000).toISOString()
-        : parseAsIST(c?.contest_end_date);
+      // ⭐ USE CodeChef's ISO fields DIRECTLY
+      const startISO = c.contest_start_date_iso || null;
+      const endISO = c.contest_end_date_iso || null;
 
       return {
         externalId: c.contest_code,
@@ -73,11 +43,13 @@ export async function GET() {
         platform: "codechef",
         url: `https://www.codechef.com/${c.contest_code}`,
 
-        startDate: start,
-        endDate: end,
+        // RAW ISO FROM API (IST INCLUDED)
+        startDate: startISO,
+        endDate: endISO,
 
-        startDateFormatted: formatIST(start),
-        endDateFormatted: formatIST(end),
+        // FORMATTED IST
+        startDateFormatted: formatIST(startISO),
+        endDateFormatted: formatIST(endISO),
 
         location: "Online",
         status: "UPCOMING",
