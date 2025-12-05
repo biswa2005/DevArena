@@ -98,7 +98,7 @@ export default function HackathonsPage() {
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-5xl font-bold text-center mb-12 uppercase bg-linear-to-t from-slate-600 to-slate-50 bg-clip-text text-transparent"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 uppercase bg-linear-to-t from-slate-600 to-slate-50 bg-clip-text text-transparent"
         >
           Hackathons
         </motion.h1>
