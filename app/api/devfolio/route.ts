@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const url =
-      "https://devfolio.co/_next/data/PymhXHvusGW-VrJ4QTWf5/hackathons.json";
+      "https://devfolio.co/_next/data/8Hejxsl5athaoPOLV1PCh/hackathons.json";
     const res = await axios.get(url);
 
     const ongoing_hackathons =
