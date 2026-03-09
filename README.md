@@ -36,6 +36,12 @@ DevArena is a polished Next.js application that aggregates programming contests 
 
 ## Local Setup
 
+Github Initialization
+
+```bash
+git clone https://github.com/biswa2005/DevArena.git
+```
+
 Prerequisites
 
 - Node.js (v18+ recommended)
