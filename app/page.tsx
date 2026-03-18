@@ -99,23 +99,57 @@ export default function Home() {
         >
           Supported Platforms
         </motion.h2>
-
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {[
-            { name: "CodeChef", color: "from-orange-500 to-orange-600" },
-            { name: "Codeforces", color: "from-blue-500 to-blue-600" },
-            { name: "Unstop", color: "from-cyan-500 to-cyan-600" },
-            { name: "Devfolio", color: "from-purple-500 to-purple-600" },
-            { name: "HackerRank", color: "from-green-500 to-green-600" },
+            {
+              name: "CodeChef",
+              logo: "/codechef.jpg",
+            },
+            {
+              name: "Codeforces",
+              logo: "/codeforces.jpg",
+            },
+            {
+              name: "Unstop",
+              logo: "/unstop.png",
+            },
+            {
+              name: "Devfolio",
+              logo: "/devfolio.png",
+            },
+            {
+              name: "HackerRank",
+              logo: "/hackerrank.jpg",
+            },
           ].map((platform, idx) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className={`bg-linear-to-br ${platform.color} p-6 rounded-xl text-white font-semibold text-center shadow-sm hover:shadow-xl transition-all duration-300`}
+              className="group relative"
             >
-              {platform.name}
+              {/* Glow Effect */}
+              <div
+                className={`absolute -inset-0.5 rounded-xl blur-md opacity-60 group-hover:opacity-100 transition duration-300 bg-linear-to-r`}
+              />
+
+              {/* Card */}
+              <div
+                className={`relative flex items-center justify-between rounded-2xl text-white font-semibold 
+                bg-linear-to-br 
+                border border-white/10
+                backdrop-blur-md
+                shadow-lg
+                group-hover:scale-115 transition-all duration-700 drop-shadow-2xl drop-shadow-cyan-500/50`}
+              >
+                {/* Logo */}
+                <img
+                  src={platform.logo}
+                  alt={platform.name}
+                  className="h-26 w-full object-cover transition bg-transparent rounded-lg"
+                />
+              </div>
             </motion.div>
           ))}
         </div>
@@ -135,7 +169,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: idx * 0.1 }}
-              className="text-center p-6 rounded-lg border border-slate-200 shadow-sm dark:border-gray-800"
+              className="text-center p-6 rounded-lg border border-slate-200 shadow-sm dark:border-gray-800 hover:border-cyan-400 dark:hover:border-cyan-400 transition-all duration-600"
             >
               <motion.p
                 className="text-4xl md:text-5xl font-bold text-blue-700 dark:text-cyan-400"
@@ -223,7 +257,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="p-6 rounded-lg border border-slate-200 shadow-sm dark:border-gray-800 hover:shadow-lg hover:border-blue-500 dark:hover:border-gray-400 transition-all"
+                className="p-6 rounded-lg border border-slate-200 shadow-sm dark:border-gray-800 hover:shadow-lg hover:border-blue-500 dark:hover:border-blue-400 transition-all"
               >
                 <item.icon className="w-8 h-8 text-blue-700 dark:text-cyan-400 mb-3" />
                 <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
