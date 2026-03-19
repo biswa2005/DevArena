@@ -11,20 +11,18 @@ async function fetchUnstop() {
       const res = await axios.get(
         `https://unstop.com/api/public/opportunity/search-result?opportunity=hackathons&oppstatus=open&page=${page}`,
       );
-
       const responseData = res.data?.data;
       if (!responseData) break;
-
       const mapped = Array.isArray(responseData.data)
         ? responseData.data.map((c: any) => ({
             externalId: c.id,
             title: c.title,
             platform: "Unstop",
             url: `https://unstop.com/${c.public_url.replace(/^\//, "")}`,
-            startDate: c.regnRequirements?.start_regn_dt
+            startDate: c.regnRequirements.start_regn_dt
               ? new Date(c.regnRequirements.start_regn_dt).toISOString()
               : null,
-            endDate: c.end_date ? new Date(c.end_date).toISOString() : null,
+            endDate: c.regnRequirements.end_regn_dt ? new Date(c.regnRequirements.end_regn_dt).toISOString() : null,
             location:
               c.region && c.region.toLowerCase() === "online"
                 ? "Online"
@@ -40,7 +38,6 @@ async function fetchUnstop() {
       // Update pagination
       lastPage = responseData.last_page || 1;
       page++;
-
     } while (page <= lastPage);
 
     return allHackathons;
@@ -57,7 +54,7 @@ export async function GET() {
   } catch (e: any) {
     return NextResponse.json(
       { error: true, message: "Failed to fetch Unstop hackathons" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

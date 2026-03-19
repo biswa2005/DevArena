@@ -329,7 +329,7 @@ function HackathonCard({
       viewport={{ once: true }}
       whileHover={{ scale: 1.05, translateY: -5 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
-      className="block p-6 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-600 shadow-md hover:shadow-xl transition-all overflow-hidden group"
+      className="block p-6 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-gray-400 dark:hover:border-gray-600 shadow-md hover:shadow-xl transition-all overflow-hidden group drop-shadow-xl drop-shadow-cyan-500/50 dark:drop-shadow-blue-500 dark:drop-shadow-sm"
     >
       {/* Platform Badge */}
       <div className="flex items-start justify-between mb-4">

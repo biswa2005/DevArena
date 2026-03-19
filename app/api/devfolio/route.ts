@@ -1,18 +1,31 @@
 import axios from "axios";
 import { NextResponse } from "next/server";
+import * as cheerio from "cheerio"
+
+const URL = 'https://devfolio.co/hackathons';
+
+async function getHackathons() {
+  const { data: html } = await axios.get(URL);
+
+  const $ = cheerio.load(html);
+
+  const scriptContent = $("#__NEXT_DATA__").html();
+
+  if (!scriptContent) throw new Error("No NEXT_DATA found");
+
+  const json = JSON.parse(scriptContent);
+
+  const hackathons = json.props.pageProps.dehydratedState.queries[0].state.data;
+
+  return hackathons;
+}
 
 export async function GET() {
   try {
-    const url =
-      "https://devfolio.co/_next/data/PymhXHvusGW-VrJ4QTWf5/hackathons.json";
-    const res = await axios.get(url);
-
-    const ongoing_hackathons =
-      res.data.pageProps.dehydratedState.queries[0].state.data.open_hackathons;
-
-    const upcoming_hackathons =
-      res.data.pageProps.dehydratedState.queries[0].state.data
-        .upcoming_hackathons;
+    const hackathons = await getHackathons();
+    const ongoing_hackathons = hackathons.open_hackathons;
+    const upcoming_hackathons = hackathons.upcoming_hackathons;
+    const featured_hackathons = hackathons.featured_hackathons;
 
     const mapContest = (c: any) => ({
       externalId: c.uuid,
@@ -30,13 +43,20 @@ export async function GET() {
     const ongoing = Array.isArray(ongoing_hackathons)
       ? ongoing_hackathons.map(mapContest)
       : [];
+      console.log("Ongoing hackathons:", ongoing.length);
 
     const upcoming = Array.isArray(upcoming_hackathons)
       ? upcoming_hackathons.map(mapContest)
       : [];
+      console.log("Upcoming hackathons:", upcoming.length);
+
+    const featured = Array.isArray(featured_hackathons)
+      ? featured_hackathons.map(mapContest)
+      : [];
+      console.log("Featured hackathons:", featured.length);
 
     return NextResponse.json({
-      devfolio_hackathons: [...ongoing, ...upcoming],
+      devfolio_hackathons: [...ongoing, ...upcoming, ...featured],
     });
   } catch (err: any) {
     return NextResponse.json(
